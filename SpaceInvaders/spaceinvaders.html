@@ -6,34 +6,146 @@
 <script src="http://code.jquery.com/jquery-3.1.1.js"></script>
 <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
+<style type="text/css">
+.stage {
+	width: 820px;
+	height: 600px;
+	background-image: url("images/espaco.jpg");
+	background-color: black;
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	margin: auto;
+}
+.invasor {
+	width: 30px;
+	height: 30px;
+	background-color: blue;
+	position: absolute;
+	display: block;
+	background-color: blue;
+}
+#nave {
+	width: 40px;
+	height: 40px;
+	background-color: red;
+	position: absolute;
+	display: block;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+}
+.tiro {
+	width: 2px;
+	height: 5px;
+	background-color: white;
+	position: absolute;
+	display: block;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	top: 41;
+	margin: auto;
+}
+</style>
+
+
 <script type="text/javascript">
 	//Definição dos Invasores
-
 	var distanciaHorizontalInvasores = 30;
 	var distanciaVerticalInvasores = 10;
-
 	var tamanhoInvasores = 30;
 	var invasoresLinha = 5;
 	var invasoresColuna = 8;
 	var invasores = [];
-
 	var direcaoHorizontal = 1;// 1 move para a direita e -1 move para a esquerda;
-	var posicaoVertical = 0; // 
+	var posicaoVertical = 0; //
+	var movimentoNave = 60; // Incremento de movimento da nave
+	var tiroLiberado = true;
 
-	function gameLog(log, alert) {
-		var id = new Date().getTime();
-		$('<div></div>', {'data-id': id}).addClass('log').text(log).appendTo($('#logs-container')).css('background', '#FF7').animate({backgroundColor: '#444'}, 500);
-		setTimeout(function() {
-			$('.log[data-id='+id+']').fadeOut(function() {
-				$(this).remove();
-			});
-		}, 60000);
+
+	function iniciarJogo() {
+		iniciarInvasores();
+		iniciarNave();
+		eventosDOM();
 	}
-
-	function iniciarInvasores() {
-
-		gameLog("Inicialização de invasores"); /////
+	
+	function iniciarNave() {
+		$('<div />', {
+	        "id": 'nave'}).appendTo($("#divStage"));
+	}
+	
+	function eventosDOM() {
 		
+		adicionarMovimentoNave();
+		//adicionarMovimentoTiro();
+	}
+		
+	function adicionarMovimentoNave(){
+		$(document).keydown(function(event) {
+		var nave = $("#nave");
+		var keyCode = event.keyCode || event.which,
+		    seta = {esquerda: 37, cima: 38, direita: 39, baixo: 40, espaco: 32 };
+			
+		switch (keyCode) {
+				case seta.esquerda:
+					nave.animate({left : "-=" + movimentoNave}, 100, 'swing')
+					break;
+	
+				case seta.cima:
+					break;
+	
+				case seta.direita: 
+					nave.animate({left : "+=" + movimentoNave}, 100, 'swing')
+					break;
+	
+				case seta.baixo: 
+					break;
+					
+				case seta.espaco:
+					if (tiroLiberado) {
+						adicionarMovimentoTiro();
+					}
+					break;
+	
+				default:
+					return;
+				}
+				event.preventDefault(); // prevent the default action (scroll / move caret)		
+		});
+	}
+		
+	function adicionarMovimentoTiro(){
+		tamanhoNave = $("#nave").width();
+		alturaNave = $("#nave").height();
+		posicaoNave = $("#nave").position();
+		posicaoTiro = posicaoNave.left; //Meio da nave
+		
+		$('<div />', {"class": 'tiro'}).css("left", posicaoTiro).css("bottom", '41px').appendTo($("#divStage"));
+		
+		
+			$(".tiro").animate({ "top": "0", "bottom": "800"},{
+			    duration:1000,
+			    start:function(){
+			    	tiroLiberado = false;
+			    },
+			    complete:function(){
+			    	tiroLiberado = true;
+			    },
+			    progress: function(){
+			    	var posicaoTiro = $(this).position();
+			    	removeInimigo(posicaoTiro.left, posicaoTiro.top);
+			    	//Falta remover o tiro da tela e liberar o proximo tiro
+			    }
+			
+			});	
+				
+	}
+	
+	function iniciarInvasores() {
 		var n = 0;
 		var div;
 		for (i = 0; i < invasoresColuna; i++) {
@@ -46,7 +158,6 @@
 						* (distanciaHorizontalInvasores + tamanhoInvasores));
 				div.setAttribute("y", j
 						* (distanciaVerticalInvasores + tamanhoInvasores));
-
 				div.setAttribute("style", "left: " + i
 						* (distanciaHorizontalInvasores + tamanhoInvasores)
 						+ "px; top:" + j
@@ -58,26 +169,17 @@
 		}
 		setInterval(moverInvasores, 1000);
 	}
-	
-
 	function moverInvasores() {
-
-		gameLog("Move invasores"); /////
-
 		var direcao = direcaoHorizontal;
 		var posicao = posicaoVertical;
 		var x;
 		var y;
 		var quantidadeInimigos = document.getElementsByName("invasor").length;
-
 		for (i = 0; i < quantidadeInimigos; i++) {
-
 			x = parseInt(document.getElementsByName("invasor")[i]
 					.getAttribute("x"));
-
 			y = parseInt(document.getElementsByName("invasor")[i]
 					.getAttribute("y"));
-
 			if (posicao === 1) {
 				y += tamanhoInvasores + distanciaVerticalInvasores;
 				posicaoVertical = 2;
@@ -92,12 +194,10 @@
 			document.getElementsByName("invasor")[i].style.left = document
 					.getElementsByName("invasor")[i].getAttribute("x")
 					+ "px";
-
 			document.getElementsByName("invasor")[i].setAttribute("y", y);
 			document.getElementsByName("invasor")[i].style.top = document
 					.getElementsByName("invasor")[i].getAttribute("y")
 					+ "px";
-
 			if (x + (tamanhoInvasores + distanciaHorizontalInvasores) > 800) {
 				if (direcao === direcaoHorizontal && posicaoVertical === 0) {
 					direcaoHorizontal *= -1;
@@ -108,7 +208,6 @@
 					}
 				}
 			}
-
 			if (x - (tamanhoInvasores + distanciaHorizontalInvasores) < 0) {
 				if (direcao === direcaoHorizontal && posicaoVertical === 0) {
 					direcaoHorizontal *= -1;
@@ -121,66 +220,30 @@
 			}
 		}
 	}
-
-	
-	function atingeinimigo(){
-
-		gameLog("atinge inimigo");
-
-		var 
-			
+	function removeInimigo(left, top) {
+		var quantidadeInimigos = document.getElementsByName("invasor").length;
+		var x, y;
+		for (i = 0; i < quantidadeInimigos; i++) {
+			x = parseInt(document.getElementsByName("invasor")[i].getAttribute("x"));
+			y = parseInt(document.getElementsByName("invasor")[i].getAttribute("y"));
+			if ( x >= left && x <= (left + tamanhoInvasores)
+					&&  y>= top && y <= (top + tamanhoInvasores)){
+				console.log("tiro");
+				//document.getElementsByName("invasor")[i].hide("explode",500);
+				$("#"+document.getElementsByName("invasor")[i].getAttribute("id")).hide("explode",300);
+				document.getElementsByName("invasor")[i].remove();
+				return;
+			}
+		}
 	}
-
-
 	
 </script>
 
-<style type="text/css">
-.stage {
-	width: 820px;
-	height: 600px;
-	background-image: url("imagens/espaco.jpg");
-	background-color: black;
-	position: absolute;
-}
-
-.invasor {
-	width: 30px;
-	height: 30px;
-	background-color: blue;
-	position: absolute;
-	display: block;
-	background-color: blue;
-}
-
-#logs-container {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	width: 250px;
-	background: #444;
-	border-right: 1px solid #111;
-	font-size: 12px;
-	font-family: monospace;
-	color: white;
-	opacity: 0;
-}
-
-#logs-container:hover {
-	opacity: 100;
-}
-</style>
-
 </head>
-<body bgcolor="black">
-	
+<body>
 	<div class="stage" id="divStage">
-		<button onclick="iniciarInvasores()">Iniciar Game</button>
-		<div id="logs-container">
-	</div>
-	</div>
+		<button onclick="iniciarJogo()">Iniciar Game</button>
 
-
+	</div>
 </body>
 </html>
-
