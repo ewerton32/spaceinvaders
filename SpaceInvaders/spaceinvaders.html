@@ -20,6 +20,7 @@
 	bottom: 0;
 	margin: auto;
 }
+
 .invasor {
 	width: 30px;
 	height: 30px;
@@ -28,6 +29,7 @@
 	display: block;
 	background-color: blue;
 }
+
 #nave {
 	width: 40px;
 	height: 40px;
@@ -39,6 +41,7 @@
 	right: 0;
 	margin: auto;
 }
+
 .tiro {
 	width: 2px;
 	height: 5px;
@@ -56,16 +59,20 @@
 
 <script type="text/javascript">
 	//Definição dos Invasores
+
 	var distanciaHorizontalInvasores = 30;
 	var distanciaVerticalInvasores = 10;
+
 	var tamanhoInvasores = 30;
 	var invasoresLinha = 5;
 	var invasoresColuna = 8;
 	var invasores = [];
+
 	var direcaoHorizontal = 1;// 1 move para a direita e -1 move para a esquerda;
 	var posicaoVertical = 0; //
 	var movimentoNave = 60; // Incremento de movimento da nave
 	var tiroLiberado = true;
+
 	function iniciarJogo() {
 		iniciarInvasores();
 		iniciarNave();
@@ -81,6 +88,7 @@
 		
 		adicionarMovimentoNave();
 		//adicionarMovimentoTiro();
+
 	}
 		
 	function adicionarMovimentoNave(){
@@ -169,6 +177,7 @@
 						* (distanciaHorizontalInvasores + tamanhoInvasores));
 				div.setAttribute("y", j
 						* (distanciaVerticalInvasores + tamanhoInvasores));
+
 				div.setAttribute("style", "left: " + i
 						* (distanciaHorizontalInvasores + tamanhoInvasores)
 						+ "px; top:" + j
@@ -180,17 +189,23 @@
 		}
 		setInterval(moverInvasores, 1000);
 	}
+
 	function moverInvasores() {
+
 		var direcao = direcaoHorizontal;
 		var posicao = posicaoVertical;
 		var x;
 		var y;
 		var quantidadeInimigos = document.getElementsByName("invasor").length;
+
 		for (i = 0; i < quantidadeInimigos; i++) {
+
 			x = parseInt(document.getElementsByName("invasor")[i]
 					.getAttribute("x"));
+
 			y = parseInt(document.getElementsByName("invasor")[i]
 					.getAttribute("y"));
+
 			if (posicao === 1) {
 				y += tamanhoInvasores + distanciaVerticalInvasores;
 				posicaoVertical = 2;
@@ -205,10 +220,12 @@
 			document.getElementsByName("invasor")[i].style.left = document
 					.getElementsByName("invasor")[i].getAttribute("x")
 					+ "px";
+
 			document.getElementsByName("invasor")[i].setAttribute("y", y);
 			document.getElementsByName("invasor")[i].style.top = document
 					.getElementsByName("invasor")[i].getAttribute("y")
 					+ "px";
+
 			if (x + (tamanhoInvasores + distanciaHorizontalInvasores) > 800) {
 				if (direcao === direcaoHorizontal && posicaoVertical === 0) {
 					direcaoHorizontal *= -1;
@@ -219,6 +236,7 @@
 					}
 				}
 			}
+
 			if (x - (tamanhoInvasores + distanciaHorizontalInvasores) < 0) {
 				if (direcao === direcaoHorizontal && posicaoVertical === 0) {
 					direcaoHorizontal *= -1;
@@ -231,6 +249,7 @@
 			}
 		}
 	}
+
 	function removeInimigo(left, top, tiro) {
 		var x, y;
 		$( ".invasor" ).each(function( index ) {
@@ -246,6 +265,7 @@
 	}
 	
 	
+
 </script>
 
 </head>
